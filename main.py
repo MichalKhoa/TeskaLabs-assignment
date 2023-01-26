@@ -1,10 +1,11 @@
 import json
 import pymongo
+import threading
 
 from datetime import datetime
 start_time = datetime.now()
 '''
-To compare runtime of the code
+I've implemented this to compare execution times to know whether the threading actually improves anything
 '''
 
 
@@ -63,6 +64,7 @@ def parse_extract_upload(data, database):
         post['created_at'] = get_created_at(data[i])
         post['assigned IP addresses'] = get_ip_addresses(data[i])
 
+        # print(post)
         database.insert_one(post)
 
 
@@ -70,12 +72,12 @@ def main():
     file = open("sample-data.json", "r")
     loaded_data = json.load(file)
 
-    mongodblink = input('Paste a link to the MongoDB db:')
+    mongodblink = input('Paste a link to the MongoDB db you want the output to be sent to:')
     cluster = pymongo.MongoClient(mongodblink)
     db = cluster['test_database']
     col = db["test_output"]
-
-    parse_extract_upload(loaded_data, col)
+    x = threading.Thread(target=parse_extract_upload, args=(loaded_data, col))
+    x.start()
 
 
 if __name__ == '__main__':
