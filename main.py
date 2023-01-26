@@ -7,14 +7,6 @@ start_time = datetime.now()
 To compare runtime of the code
 '''
 
-file = open("sample-data.json", "r")
-loaded_data = json.load(file)
-
-MongoDBlink = input('Paste a link to the MongoDB db:')
-cluster = pymongo.MongoClient(MongoDBlink)
-db = cluster['test_database']
-col = db["test_output"]
-
 
 def get_name(data):
     return data.get("name")
@@ -60,7 +52,7 @@ def get_ip_addresses(data):
         return "No assigned IP addresses"
 
 
-def parse_and_extract(data):
+def parse_extract_upload(data, database):
     for i in range(len(data)):
         post = dict()
 
@@ -71,15 +63,23 @@ def parse_and_extract(data):
         post['created_at'] = get_created_at(data[i])
         post['assigned IP addresses'] = get_ip_addresses(data[i])
 
-        col.insert_one(post)
+        database.insert_one(post)
 
 
 def main():
-    parse_and_extract(loaded_data)
+    file = open("sample-data.json", "r")
+    loaded_data = json.load(file)
+
+    mongodblink = input('Paste a link to the MongoDB db:')
+    cluster = pymongo.MongoClient(mongodblink)
+    db = cluster['test_database']
+    col = db["test_output"]
+
+    parse_extract_upload(loaded_data, col)
 
 
 if __name__ == '__main__':
     main()
 
 end_time = datetime.now()
-print('\nDuration: {}'.format(end_time - start_time))
+print('\nExecution time: {}'.format(end_time - start_time))
