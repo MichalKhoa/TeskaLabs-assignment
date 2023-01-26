@@ -31,7 +31,7 @@ for i in range(len(data)):
 
     post['status'] = data[i].get("status")
 
-    post['created_at'] = data[i].get("created_at")
+    post['created_at'] = datetime.timestamp(datetime.strptime(data[i].get("created_at"), "%Y-%m-%dT%H:%M:%S%z"))
 
     try:
         list_of_keys = list(data[i]["state"]["network"].keys())
@@ -50,7 +50,6 @@ for i in range(len(data)):
         post['assigned IP addressses'] = "No assigned IP addresses"
 
     col.insert_one(post)
-
 
 end_time = datetime.now()
 print('\nDuration: {}'.format(end_time - start_time))
