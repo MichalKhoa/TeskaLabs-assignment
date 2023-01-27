@@ -10,10 +10,20 @@ I've implemented this to compare execution times to know whether the threading a
 
 
 def get_name(data):
+    """
+        finds and returns the name of the container
+    :param data: data to be parsed
+    :return: name of the lxc container
+    """
     return data.get("name")
 
 
 def get_cpu_usage(data):
+    """
+        finds and returns the cpu usage of the lxc container
+    :param data: data to be parsed
+    :return: cpu usage value, if the lxc container is not running, returns 0
+    """
     try:
         return data["state"]["cpu"].get("usage")
     except TypeError:
@@ -21,6 +31,11 @@ def get_cpu_usage(data):
     
     
 def get_memory_usage(data):
+    """
+        finds and returns memory usage of the lxc container
+    :param data: data to be parsed
+    :return: memory usage value, if the lxc container is not running, returns 0
+    """
     try:
         return data["state"]["memory"].get("usage")
     except TypeError:
@@ -28,14 +43,31 @@ def get_memory_usage(data):
     
 
 def get_status(data):
+    """
+        finds and returns the status of the lxc container
+    :param data: data to be parsed
+    :return: status of the lxc container
+    """
     return data.get("status")
 
 
 def get_created_at(data):
+    """
+        finds and returns UTC timestamp of lxc container creation
+    :param data: data to be parsed
+    :return: UTC timestamp of lxc container creation converted from UTC datetime,
+             the conversion is done through datetime module
+    """
     return datetime.timestamp(datetime.strptime(data.get("created_at"), "%Y-%m-%dT%H:%M:%S%z"))
 
 
 def get_ip_addresses(data):
+    """
+        finds and returns all the assigned IP addresses as a list
+    :param data: data to be parsed
+    :return: a list of all assigned IP addresses,
+             if there are none, returns a message "No assigned IP addresses"
+    """
     try:
         list_of_keys = list(data["state"]["network"].keys())
         ip_addresses = []
@@ -54,6 +86,12 @@ def get_ip_addresses(data):
 
 
 def parse_extract_upload(data, database):
+    """
+        parses through each lxc container at a time and sends the output containg name, cpu and memorz usage,
+        status, date of creation and all assigned IP addresses in a list to the set database
+    :param data: data to be parsed
+    :param database: target database for the output
+    """
     for i in range(len(data)):
         post = dict()
 
